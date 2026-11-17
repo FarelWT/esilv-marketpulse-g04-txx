@@ -1,0 +1,3 @@
+@Noemie31500 ➜ /workspaces/esilv-marketpulse-g04-t08 (noemie_schaeffer) $ cp notebooks/00_td02_sandbox.ipynb evidence/noemie_schaeffer/
+
+
