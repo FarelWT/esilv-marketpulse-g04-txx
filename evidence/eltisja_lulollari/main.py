@@ -71,6 +71,5 @@ def main():
     print(f"Period: {LOOKBACK_LABEL}")
     print(f"Interval: {INTERVAL_LABEL}")
 
-
 if __name__ == "__main__":
     main()
