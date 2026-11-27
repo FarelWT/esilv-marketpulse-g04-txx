@@ -1,6 +1,8 @@
 from pathlib import Path
 import csv
 import json
+from analytics import align_series
+from analytics import index_by_date
 
 
 DATA_DIR = Path("data/sample")
@@ -59,16 +61,32 @@ def display_market_summary(asset, prices, show_currency=True):
     print(f"First close  : {first_close:.2f}{currency_suffix}")
     print(f"Last close   : {last_close:.2f}{currency_suffix}")
 
+def normalize_price_row(row):
+    return {
+        "date": row["date"],
+        "ticker": row["ticker"],
+        "open": float(row["open"]),
+        "high": float(row["high"]),
+        "low": float(row["low"]),
+        "close": float(row["close"]),
+        "volume": int(row["volume"]),
+    }
+
+
 
 def main():
     instruments = load_instruments()
     prices = load_prices()
+    normalized_prices = [
+    normalize_price_row(row)
+    for row in prices
+    ]
 
     instrument = instruments["instrument"]
     benchmark = instruments["benchmark"]
 
-    instrument_prices = filter_prices(prices, instrument["ticker"])
-    benchmark_prices = filter_prices(prices, benchmark["ticker"])
+    instrument_prices = filter_prices(normalized_prices, instrument["ticker"])
+    benchmark_prices = filter_prices(normalized_prices, benchmark["ticker"])
 
     print("=== MarketPulse ===")
     print()
@@ -82,6 +100,14 @@ def main():
 
     print("Benchmark")
     display_market_summary(benchmark, benchmark_prices, show_currency=False)
+
+    aligned_instrument, aligned_benchmark = align_series(
+    instrument_prices,
+    benchmark_prices,
+    )
+
+ 
+ 
 
 
 if __name__ == "__main__":
