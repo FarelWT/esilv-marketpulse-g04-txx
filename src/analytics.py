@@ -52,3 +52,22 @@ def calculate_base_100(prices):
         })
 
     return result
+
+def calculate_daily_returns(prices):
+    returns = []
+
+    for index in range(1, len(prices)):
+        previous = prices[index - 1]
+        current = prices[index]
+
+        value = (
+            current["close"] / previous["close"] - 1
+        ) * 100
+
+        returns.append({
+            "date": current["date"],
+            "ticker": current["ticker"],
+            "return": value,
+        })
+
+    return returns
