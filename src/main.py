@@ -2,6 +2,9 @@ from pathlib import Path
 import csv
 import json
 
+from analytics import (
+    align_series
+)
 
 DATA_DIR = Path("data/sample")
 
@@ -26,6 +29,18 @@ def filter_prices(prices, ticker):
     return [row for row in prices if row["ticker"] == ticker]
 
 
+def normalize_price_row(row):
+    return {
+        "date": row["date"],
+        "ticker": row["ticker"],
+        "open": float(row["open"]),
+        "high": float(row["high"]),
+        "low": float(row["low"]),
+        "close": float(row["close"]),
+        "volume": int(row["volume"]),
+    }
+
+
 def main():
     instruments = load_instruments()
     prices = load_prices()
@@ -35,6 +50,16 @@ def main():
 
     instrument_prices = filter_prices(prices, instrument["ticker"])
     benchmark_prices = filter_prices(prices, benchmark["ticker"])
+
+    normalized_prices = [
+        normalize_price_row(row)
+        for row in prices
+    ]
+
+    aligned_instrument, aligned_benchmark = align_series(
+        instrument_prices,
+        benchmark_prices,
+    )
 
     instrument_latest = instrument_prices[-1]
     benchmark_latest = benchmark_prices[-1]
@@ -56,6 +81,11 @@ def main():
     print(f"{instrument['ticker']}: {len(instrument_prices)}")
     print(f"{benchmark['ticker']}: {len(benchmark_prices)}")
 
+    print(type(normalized_prices[0]["close"]))
+    print(type(normalized_prices[0]["volume"]))
+
+    print("Aligned Instrument", aligned_instrument, "\n\n\n")
+    print("Aligned Benchmark", aligned_benchmark)
 
 if __name__ == "__main__":
     main()
