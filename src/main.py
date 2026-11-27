@@ -2,6 +2,12 @@ from pathlib import Path
 import csv
 import json
 
+from analytics import (
+    align_series,
+    calculate_period_return,
+    calculate_relative_performance,
+    calculate_base_100
+)
 # Configuration
 DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "sample"
 
@@ -19,6 +25,17 @@ def load_instruments():
 def load_prices():
     with open(DATA_DIR / "prices.csv", encoding="utf-8") as file:
         return list(csv.DictReader(file))
+
+def normalize_price_row(row):
+    return {
+        "date": row["date"],
+        "ticker": row["ticker"],
+        "open": float(row["open"]),
+        "high": float(row["high"]),
+        "low": float(row["low"]),
+        "close": float(row["close"]),
+        "volume": int(row["volume"])
+    }
 
 
 # Filter observations by ticker
@@ -56,7 +73,7 @@ def display_market_summary(asset, prices, show_currency=True):
 # Main program
 def main():
     instruments = load_instruments()
-    prices = load_prices()
+    prices = [normalize_price_row(row) for row in load_prices()]
 
     instrument = instruments["instrument"]
     benchmark = instruments["benchmark"]
@@ -69,8 +86,19 @@ def main():
         prices, benchmark["ticker"]
     )
 
-    assert len(instrument_prices) == 21
-    assert len(benchmark_prices) == 21
+    instrument_prices, benchmark_prices = align_series(
+        instrument_prices, benchmark_prices
+    )
+
+    instrument_return = calculate_period_return(instrument_prices)
+    benchmark_return = calculate_period_return(benchmark_prices)
+
+    relative = calculate_relative_performance(
+        instrument_return, benchmark_return
+    )
+
+    instrument_base = calculate_base_100(instrument_prices)
+    benchmark_base = calculate_base_100(benchmark_prices)
 
     print("=== MarketPulse ===")
     print()
@@ -90,6 +118,14 @@ def main():
         benchmark, benchmark_prices, show_currency=False
     )
 
+    print("\n=== Performance comparison ===")
+    print(f"Instrument return: {instrument_return:.2f}%")
+    print(f"Benchmark return: {benchmark_return:.2f}%")
+    print(f"Relative performance: {relative:+.2f} percentage points")
+
+    print("\nBase 100")
+    print(f"Instrument: 100 -> {instrument_base[-1]['value']:.2f}")
+    print(f"Benchmark: 100 -> {benchmark_base[-1]['value']:.2f}")
 
 if __name__ == "__main__":
     main()
