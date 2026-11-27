@@ -3,7 +3,8 @@ import csv
 import json
 
 from analytics import (
-    align_series
+    align_series,
+    calculate_period_return
 )
 
 DATA_DIR = Path("data/sample")
@@ -48,18 +49,29 @@ def main():
     instrument = instruments["instrument"]
     benchmark = instruments["benchmark"]
 
-    instrument_prices = filter_prices(prices, instrument["ticker"])
-    benchmark_prices = filter_prices(prices, benchmark["ticker"])
-
     normalized_prices = [
         normalize_price_row(row)
         for row in prices
     ]
 
+    instrument_prices = filter_prices(normalized_prices, instrument["ticker"])
+    benchmark_prices = filter_prices(normalized_prices, benchmark["ticker"])
+
+
     aligned_instrument, aligned_benchmark = align_series(
         instrument_prices,
         benchmark_prices,
     )
+
+
+    instrument_return = calculate_period_return(
+        aligned_instrument
+    )
+
+    benchmark_return = calculate_period_return(
+        aligned_benchmark
+    )
+
 
     instrument_latest = instrument_prices[-1]
     benchmark_latest = benchmark_prices[-1]
@@ -84,8 +96,10 @@ def main():
     print(type(normalized_prices[0]["close"]))
     print(type(normalized_prices[0]["volume"]))
 
-    print("Aligned Instrument", aligned_instrument, "\n\n\n")
-    print("Aligned Benchmark", aligned_benchmark)
+    print("Instrument Return", instrument_return, "\n\n\n")
+    print("Benchmark Return", benchmark_return)
+
+    
 
 if __name__ == "__main__":
     main()

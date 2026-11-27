@@ -25,3 +25,17 @@ def align_series(instrument_prices, benchmark_prices):
     ]
 
     return aligned_instrument, aligned_benchmark
+
+
+def calculate_period_return(prices):
+    first_close = prices[0]["close"]
+    last_close = prices[-1]["close"]
+
+    return (last_close / first_close - 1) * 100
+
+
+def calculate_relative_performance(
+    instrument_return,
+    benchmark_return,
+):
+    return instrument_return - benchmark_return
