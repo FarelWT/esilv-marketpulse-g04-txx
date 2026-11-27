@@ -4,7 +4,9 @@ import json
 
 from analytics import (
     align_series,
-    calculate_period_return
+    calculate_base_100,
+    calculate_period_return,
+    calculate_relative_performance,
 )
 
 DATA_DIR = Path("data/sample")
@@ -72,34 +74,54 @@ def main():
         aligned_benchmark
     )
 
+    relative_performance = calculate_relative_performance(
+        instrument_return,
+        benchmark_return,
+    )
+
+    instrument_base_100 = calculate_base_100(aligned_instrument)
+    benchmark_base_100 = calculate_base_100(aligned_benchmark)
 
     instrument_latest = instrument_prices[-1]
     benchmark_latest = benchmark_prices[-1]
 
     print("=== MarketPulse ===")
     print()
+
+    print("Market configuration")
+    print(f"Period   : {LOOKBACK_LABEL}")
+    print(f"Interval : {INTERVAL_LABEL}")
+    print()
+
     print("Instrument")
     print(f"{instrument['ticker']} - {instrument['name']}")
-    print(f"Last price: {instrument_latest['close']} {instrument['currency']}")
+    print(f"Period return : {instrument_return:.2f}%")
     print()
+
     print("Benchmark")
     print(f"{benchmark['ticker']} - {benchmark['name']}")
-    print(f"Last level: {benchmark_latest['close']}")
+    print(f"Period return : {benchmark_return:.2f}%")
     print()
-    print(f"Period: {LOOKBACK_LABEL}")
-    print(f"Interval: {INTERVAL_LABEL}")
+
+    print("Relative performance")
+    print(
+        f"{instrument['ticker']} vs {benchmark['ticker']} : "
+        f"{relative_performance:+.2f} percentage points"
+    )
     print()
-    print("Observations")
-    print(f"{instrument['ticker']}: {len(instrument_prices)}")
-    print(f"{benchmark['ticker']}: {len(benchmark_prices)}")
 
-    print(type(normalized_prices[0]["close"]))
-    print(type(normalized_prices[0]["volume"]))
+    print("Base 100")
+    print(
+        f"{instrument['ticker']:<6}: "
+        f"{instrument_base_100[0]['value']:.2f} -> "
+        f"{instrument_base_100[-1]['value']:.2f}"
+    )
+    print(
+        f"{benchmark['ticker']:<6}: "
+        f"{benchmark_base_100[0]['value']:.2f} -> "
+        f"{benchmark_base_100[-1]['value']:.2f}"
+    )
 
-    print("Instrument Return", instrument_return, "\n\n\n")
-    print("Benchmark Return", benchmark_return)
-
-    
 
 if __name__ == "__main__":
     main()
