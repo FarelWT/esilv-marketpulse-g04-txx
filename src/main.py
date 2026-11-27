@@ -124,7 +124,11 @@ def main():
     print(f"Instrument return : {instrument_return:+.2f}%")
     print(f"Benchmark return  : {benchmark_return:+.2f}%")
     print(f"Relative performance : {relative_performance:+.2f} percentage points")
-
+    
+    print()
+    print("Base 100")
+    print(f"{instrument['ticker']:<5} : {instrument_base_100[0]['value']:.2f} -> {instrument_base_100[-1]['value']:.2f}")
+    print(f"{benchmark['ticker']:<5} : {benchmark_base_100[0]['value']:.2f} -> {benchmark_base_100[-1]['value']:.2f}")
  
  
 
