@@ -3,6 +3,7 @@ import csv
 import json
 from analytics import align_series
 from analytics import index_by_date
+from analytics import (calculate_period_return,calculate_relative_performance,calculate_base_100,)
 
 
 DATA_DIR = Path("data/sample")
@@ -103,8 +104,21 @@ def main():
 
     aligned_instrument, aligned_benchmark = align_series(
     instrument_prices,
-    benchmark_prices,
+    benchmark_prices,)
+
+    instrument_return = calculate_period_return(aligned_instrument)
+    benchmark_return = calculate_period_return(aligned_benchmark)
+        
+    relative_performance = calculate_relative_performance(
+        instrument_return,
+        benchmark_return,
     )
+    instrument_base_100 = calculate_base_100(aligned_instrument)
+    benchmark_base_100 = calculate_base_100(aligned_benchmark)
+        
+    print(f"Instrument return : {instrument_return:+.2f}%")
+    print(f"Benchmark return  : {benchmark_return:+.2f}%")
+    print(f"Relative performance : {relative_performance:+.2f} percentage points")
 
  
  
