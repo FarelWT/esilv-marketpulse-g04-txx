@@ -4,7 +4,12 @@ import json
 from analytics import align_series
 from analytics import index_by_date
 from analytics import (calculate_period_return,calculate_relative_performance,calculate_base_100,)
-
+from analytics import (
+    align_series,
+    calculate_base_100,
+    calculate_period_return,
+    calculate_relative_performance,
+)
 
 DATA_DIR = Path("data/sample")
 
